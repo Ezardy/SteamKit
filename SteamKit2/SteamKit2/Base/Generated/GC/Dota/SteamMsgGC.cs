@@ -1812,10 +1812,10 @@ namespace SteamKit2.GC.Dota.Internal
         private bool? __pbn__secure_allowed;
 
         [global::ProtoBuf.ProtoMember(3)]
-        public global::System.Collections.Generic.List<keyvalue> diagnostics { get; } = new global::System.Collections.Generic.List<keyvalue>();
+        public global::System.Collections.Generic.List<keyValue> diagnostics { get; } = new global::System.Collections.Generic.List<keyValue>();
 
         [global::ProtoBuf.ProtoContract()]
-        public partial class keyvalue : global::ProtoBuf.IExtensible
+        public partial class keyValue : global::ProtoBuf.IExtensible
         {
             private global::ProtoBuf.IExtension __pbn__extensionData;
             global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
