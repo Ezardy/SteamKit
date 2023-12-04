@@ -14,7 +14,7 @@ namespace SteamKit2
     {
         class WebSocketContext : IDisposable
         {
-            public WebSocketContext( WebSocketConnection connection, EndPoint endPoint, IWebProxy proxy = null )
+            public WebSocketContext( WebSocketConnection connection, EndPoint endPoint, IWebProxy? proxy = null )
             {
                 this.connection = connection ?? throw new ArgumentNullException( nameof( connection ) );
                 EndPoint = endPoint ?? throw new ArgumentNullException( nameof( endPoint ) );

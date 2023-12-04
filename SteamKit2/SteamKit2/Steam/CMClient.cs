@@ -166,7 +166,7 @@ namespace SteamKit2.Internal
         /// <param name="proxy">
         /// The proxy server that should be used to connect to CM server (only WebSocketConnection is supported).
         /// </param>
-        public void Connect( ServerRecord cmServer = null, WebProxy proxy = null )
+        public void Connect( ServerRecord? cmServer = null, WebProxy? proxy = null )
         {
             lock ( connectionLock )
             {
@@ -220,7 +220,7 @@ namespace SteamKit2.Internal
                     connection.Connected += Connected;
                     connection.Disconnected += Disconnected;
 
-                    IWebProxy webProxy = proxy ?? Configuration.WebProxy;
+                    IWebProxy? webProxy = proxy ?? Configuration.WebProxy;
                     if ( ( webProxy != null ) && connection is WebSocketConnection socketConnection )
                     {
                         socketConnection.Connect( record.EndPoint, webProxy, ( int )ConnectionTimeout.TotalMilliseconds );

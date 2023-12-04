@@ -112,7 +112,7 @@ namespace SteamKit2
         /// <summary>
         /// A proxy server to use for WebSocket requests.
         /// </summary>
-        public IWebProxy WebProxy => state.WebProxy;
+        public IWebProxy? WebProxy => state.WebProxy;
 
         /// <summary>
         /// The server list used for this configuration.

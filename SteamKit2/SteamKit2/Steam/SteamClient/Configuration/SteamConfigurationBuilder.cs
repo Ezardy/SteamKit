@@ -111,7 +111,7 @@ namespace SteamKit2
             return this;
         }
 
-        public ISteamConfigurationBuilder WithWebProxy( IWebProxy webProxy )
+        public ISteamConfigurationBuilder WithWebProxy( IWebProxy? webProxy )
         {
             state.WebProxy = webProxy;
             return this;
