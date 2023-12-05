@@ -13,13 +13,17 @@ namespace SteamKit2
     {
         internal class WebSocketContext : IDisposable
         {
-            public WebSocketContext(WebSocketConnection connection, EndPoint endPoint)
+            public WebSocketContext( WebSocketConnection connection, EndPoint endPoint, IWebProxy? proxy = null )
             {
                 this.connection = connection ?? throw new ArgumentNullException( nameof( connection ) );
                 EndPoint = endPoint ?? throw new ArgumentNullException( nameof( endPoint ) );
 
                 cts = new CancellationTokenSource();
                 socket = new ClientWebSocket();
+                if ( proxy != null )
+                {
+                    socket.Options.Proxy = proxy;
+                }
                 connectionUri = ConstructUri(endPoint);
             }
 
@@ -32,7 +36,7 @@ namespace SteamKit2
 
             public EndPoint EndPoint { get; }
 
-            public void Start(TimeSpan connectionTimeout)
+            public void Start( TimeSpan connectionTimeout )
             {
                 runloopTask = RunCore(connectionTimeout, cts.Token).IgnoringCancellation(cts.Token);
             }
@@ -42,19 +46,19 @@ namespace SteamKit2
                 using (var timeout = new CancellationTokenSource())
                 using (var combinedCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token))
                 {
-                    timeout.CancelAfter(connectionTimeout);
+                    timeout.CancelAfter( connectionTimeout );
 
                     try
                     {
                         await socket.ConnectAsync(connectionUri, combinedCancellation.Token).ConfigureAwait(false);
                     }
-                    catch (TaskCanceledException) when (timeout.IsCancellationRequested)
+                    catch ( TaskCanceledException ) when ( timeout.IsCancellationRequested )
                     {
                         connection.log.LogDebug(nameof(WebSocketContext), "Time out connecting websocket {0} after {1}", connectionUri, connectionTimeout);
                         connection.DisconnectCore(userInitiated: false, specificContext: this);
                         return;
                     }
-                    catch (Exception ex)
+                    catch ( Exception ex )
                     {
                         connection.log.LogDebug( nameof(WebSocketContext), "Exception connecting websocket: {0} - {1}", ex.GetType().FullName, ex.Message);
                         connection.DisconnectCore(userInitiated: false, specificContext: this);
@@ -65,37 +69,37 @@ namespace SteamKit2
                 connection.log.LogDebug( nameof(WebSocketContext), "Connected to {0}", connectionUri);
                 connection.Connected?.Invoke(connection, EventArgs.Empty);
 
-                while (!cancellationToken.IsCancellationRequested && socket.State == WebSocketState.Open)
+                while ( !cancellationToken.IsCancellationRequested && socket.State == WebSocketState.Open )
                 {
-                    var packet = await ReadMessageAsync(cancellationToken).ConfigureAwait(false);
-                    if (packet != null && packet.Length > 0)
+                    var packet = await ReadMessageAsync( cancellationToken ).ConfigureAwait( false );
+                    if ( packet != null && packet.Length > 0 )
                     {
-                        connection.NetMsgReceived?.Invoke(connection, new NetMsgEventArgs(packet, EndPoint));
+                        connection.NetMsgReceived?.Invoke( connection, new NetMsgEventArgs( packet, EndPoint ) );
                     }
                 }
 
-                if (socket.State == WebSocketState.Open)
+                if ( socket.State == WebSocketState.Open )
                 {
                     connection.log.LogDebug( nameof(WebSocketContext), "Closing connection...");
                     try
                     {
                         await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, null, default).ConfigureAwait(false);
                     }
-                    catch (Win32Exception ex)
+                    catch ( Win32Exception ex )
                     {
                         connection.log.LogDebug( nameof(WebSocketContext), "Error closing connection: {0}", ex.Message);
                     }
                 }
             }
 
-            public async Task SendAsync(byte[] data)
+            public async Task SendAsync( byte[] data )
             {
-                var segment = new ArraySegment<byte>(data, 0, data.Length);
+                var segment = new ArraySegment<byte>( data, 0, data.Length );
                 try
                 {
-                    await socket.SendAsync(segment, WebSocketMessageType.Binary, true, cts.Token).ConfigureAwait(false);
+                    await socket.SendAsync( segment, WebSocketMessageType.Binary, true, cts.Token ).ConfigureAwait( false );
                 }
-                catch (WebSocketException ex)
+                catch ( WebSocketException ex )
                 {
                     connection.log.LogDebug( nameof(WebSocketContext), "{0} exception when sending message: {1}", ex.GetType().FullName, ex.Message);
                     connection.DisconnectCore(userInitiated: false, specificContext: this);
@@ -105,7 +109,7 @@ namespace SteamKit2
 
             public void Dispose()
             {
-                if (Interlocked.Exchange(ref disposed, 1) == 1)
+                if ( Interlocked.Exchange( ref disposed, 1 ) == 1 )
                 {
                     return;
                 }
