@@ -5,6 +5,7 @@
 
 
 using System;
+using System.Net;
 using SteamKit2.Discovery;
 
 namespace SteamKit2
@@ -95,5 +96,12 @@ namespace SteamKit2
         /// Keys can be obtained from https://steamcommunity.com/dev or the Steamworks Partner site.</param>
         /// <returns>A builder with modified configuration.</returns>
         ISteamConfigurationBuilder WithWebAPIKey(string webApiKey);
+
+        /// <summary>
+        /// Configures this <see cref="SteamConfiguration" /> with a http proxy.
+        /// </summary>
+        /// <param name="webProxy">A http proxy.</param>
+        /// <returns>A builder with modified configuration.</returns>
+        public ISteamConfigurationBuilder WithWebProxy( IWebProxy? webProxy );
     }
 }
